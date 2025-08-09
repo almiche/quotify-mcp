@@ -1,0 +1,163 @@
+syntax = "proto3";
+
+package mcp;
+
+option go_package = "github.com/example/mcp-testing/pkg/mcp";
+
+// MCP Service Definition
+service MCPService {
+  // Initialize connection and negotiate capabilities
+  rpc Initialize(InitializeRequest) returns (InitializeResponse);
+  
+  // List available tools
+  rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
+  
+  // Call a specific tool
+  rpc CallTool(CallToolRequest) returns (CallToolResponse);
+  
+  // List available prompts
+  rpc ListPrompts(ListPromptsRequest) returns (ListPromptsResponse);
+  
+  // Get a specific prompt
+  rpc GetPrompt(GetPromptRequest) returns (GetPromptResponse);
+  
+  // List available resources
+  rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse);
+  
+  // Read a specific resource
+  rpc ReadResource(ReadResourceRequest) returns (ReadResourceResponse);
+}
+
+// Initialize messages
+message InitializeRequest {
+  string protocol_version = 1;
+  ClientCapabilities capabilities = 2;
+  ClientInfo client_info = 3;
+}
+
+message InitializeResponse {
+  string protocol_version = 1;
+  ServerCapabilities capabilities = 2;
+  ServerInfo server_info = 3;
+}
+
+message ClientCapabilities {
+  bool roots = 1;
+  bool sampling = 2;
+}
+
+message ServerCapabilities {
+  bool logging = 1;
+  bool prompts = 2;
+  bool resources = 3;
+  bool tools = 4;
+}
+
+message ClientInfo {
+  string name = 1;
+  string version = 2;
+}
+
+message ServerInfo {
+  string name = 1;
+  string version = 2;
+}
+
+// Tool messages
+message ListToolsRequest {
+  string cursor = 1;
+}
+
+message ListToolsResponse {
+  repeated Tool tools = 1;
+  string next_cursor = 2;
+}
+
+message Tool {
+  string name = 1;
+  string description = 2;
+  map<string, string> input_schema = 3;
+}
+
+message CallToolRequest {
+  string name = 1;
+  map<string, string> arguments = 2;
+}
+
+message CallToolResponse {
+  repeated ToolResult content = 1;
+  bool is_error = 2;
+}
+
+message ToolResult {
+  string type = 1;
+  string text = 2;
+}
+
+// Prompt messages
+message ListPromptsRequest {
+  string cursor = 1;
+}
+
+message ListPromptsResponse {
+  repeated Prompt prompts = 1;
+  string next_cursor = 2;
+}
+
+message Prompt {
+  string name = 1;
+  string description = 2;
+  repeated PromptArgument arguments = 3;
+}
+
+message PromptArgument {
+  string name = 1;
+  string description = 2;
+  bool required = 3;
+}
+
+message GetPromptRequest {
+  string name = 1;
+  map<string, string> arguments = 2;
+}
+
+message GetPromptResponse {
+  string description = 1;
+  repeated PromptMessage messages = 2;
+}
+
+message PromptMessage {
+  string role = 1;
+  string content = 2;
+}
+
+// Resource messages
+message ListResourcesRequest {
+  string cursor = 1;
+}
+
+message ListResourcesResponse {
+  repeated Resource resources = 1;
+  string next_cursor = 2;
+}
+
+message Resource {
+  string uri = 1;
+  string name = 2;
+  string description = 3;
+  string mime_type = 4;
+}
+
+message ReadResourceRequest {
+  string uri = 1;
+}
+
+message ReadResourceResponse {
+  repeated ResourceContent contents = 1;
+}
+
+message ResourceContent {
+  string uri = 1;
+  string mime_type = 2;
+  string text = 3;
+}

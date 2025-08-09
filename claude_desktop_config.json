@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "quotify": {
+      "command": "/Users/michelchatmajian/Crap/mcp-testing/bin/quotify-server",
+      "args": [],
+      "env": {}
+    }
+  }
+}
